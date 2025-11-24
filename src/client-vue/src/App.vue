@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>📦 Dashboard de Logística (TCC)</h1>
+    <h1>📦 Dashboard de Logística</h1>
     
     <div :class="['status-ws', wsConnected ? 'online' : 'offline']">
       WebSocket: {{ wsConnected ? 'Conectado 🟢' : 'Desconectado 🔴' }}
