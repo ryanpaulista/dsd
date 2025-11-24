@@ -1,4 +1,4 @@
-# TCC - API Gateway SOAP & WebSocket
+# API Gateway SOAP & WebSocket
 
 Este projeto demonstra uma arquitetura de microsserviços utilizando um API Gateway SOAP com implementação de HATEOAS e comunicação em tempo real via WebSocket.
 
