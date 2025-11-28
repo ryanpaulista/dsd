@@ -12,7 +12,7 @@ const PORT = 3000;
 const WSDL_URL = 'http://127.0.0.1:8000/?wsdl';
 
 app.post('/cotacao-frete', (req, res) => {
-    const { cep, peso} = req.body;
+    const {cep, peso} = req.body;
     console.log(`[NODE] Recebido pedido de cotação: CEP ${cep}, Peso ${peso}`);
 
     soap.createClient(WSDL_URL, (err, client) => {

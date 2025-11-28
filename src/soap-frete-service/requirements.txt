@@ -1,0 +1,4 @@
+lxml==6.0.2
+pytz==2025.2
+spyne==2.14.0
+Werkzeug==2.0.3

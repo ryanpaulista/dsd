@@ -11,6 +11,7 @@ class ProdutoResponse(BaseModel):
     nome: str
     descricao: str
     preco: float
+    peso: float
     imagem_url: str
     links: List[Link]
 

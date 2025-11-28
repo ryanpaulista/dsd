@@ -11,8 +11,9 @@ class FreteService(ServiceBase):
         
         res = FreteResponse()
 
-        res.valor = 20.0 + (peso * 2.0)
+        res.valor = 20.0 + (peso/1000 * 20.0)
         res.prazo = "5 dias úteis"
+        res.peso = peso
         res.obs = "Entrega sujeita a condições climáticas."
 
         return res

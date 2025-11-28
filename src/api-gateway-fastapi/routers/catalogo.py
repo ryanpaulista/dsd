@@ -12,6 +12,7 @@ async def listar_produtos():
         try:
             resp = await client.get(f"{URL_CATALOGO}/")
             produtos_django = resp.json()
+            print(produtos_django)
 
             produtos_enriquecidos = []
             for p in produtos_django:

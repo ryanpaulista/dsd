@@ -9,5 +9,6 @@ class FreteResponse(ComplexModel):
         - obs: Unicode (opcional)
     """
     valor = Float
+    peso = Float
     prazo = Unicode
     obs = Unicode
