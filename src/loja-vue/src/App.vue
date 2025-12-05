@@ -9,7 +9,10 @@ const carregando = ref(false)
 const cepInput = ref('')
 const pesoInput = ref('') 
 
-const GATEWAY_URL = 'http://localhost:8080/produtos'
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL
+const WSDL_URL = import.meta.env.VITE_WSDL_URL
+const DOCS_URL = import.meta.env.VITE_DOCS_URL
+console.log(DOCS_URL);
 
 const carregarProdutos = async () => {
   try {
@@ -80,7 +83,7 @@ onMounted(() => {
   <div class="container">
     <header>
       <h1>🧠 Brainz E-Shop</h1>
-      <p>Arquitetura Distribuída: Vue ↔ Gateway ↔ (Django + Node/SOAP)</p>
+      <p>Arquitetura Distribuída: Vue ↔ Gateway/FastAPI ↔ (Django + Node/Express -> Spyne/SOAP)</p>
     </header>
 
     <div v-if="!produtoSelecionado" class="grid">
@@ -110,7 +113,7 @@ onMounted(() => {
         <div class="frete-area">
           <div class="header-soap">
             <h3>Simular Frete (SOAP)</h3>
-            <a href="http://localhost:8000/?wsdl" target="_blank" class="wsdl-link">📄 Visualizar WSDL</a>
+            <a :href="WSDL_URL" target="_blank" class="wsdl-link">📄 Visualizar WSDL</a>
           </div>
 
           <div class="input-group">
