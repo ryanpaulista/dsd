@@ -1,17 +1,16 @@
 @echo off
 echo ==========================================
-echo    INICIANDO BRAINZ E-SHOP (WINDOWS)
+echo    INICIANDO BRAINZ E-SHOP (HIBRIDO)
 echo ==========================================
 
-REM Pega o diretorio atual
-set "BASE_DIR=%cd%"
-
-REM 1. Inicia SOAP (Porta 8000)
-start "1. SOAP Service" cmd /k "cd src\soap-frete-service & call venv\Scripts\activate & echo Iniciando SOAP... & python main.py"
+REM 1. Inicia SOAP (Via DOCKER na porta 8000)
+REM Remove container anterior se existir para evitar conflito de nome
+docker rm -f soap-container >nul 2>&1
+echo Iniciando Container SOAP...
+start "1. SOAP Service (DOCKER)" cmd /k "docker run --name soap-container -p 8000:8000 -it soap-frete"
 
 REM 2. Inicia Django (Porta 8001)
-REM Timeout de 2 segundos para dar tempo do SOAP subir (opcional)
-timeout /t 2 >nul
+timeout /t 3 >nul
 start "2. Django Catalogo" cmd /k "cd src\api-catalogo-django & call venv\Scripts\activate & echo Iniciando Django... & python manage.py runserver 0.0.0.0:8001"
 
 REM 3. Inicia Express (Porta 3000)
@@ -27,6 +26,7 @@ timeout /t 2 >nul
 start "5. Vue Frontend" cmd /k "cd src\loja-vue & echo Iniciando Vue... & npm run dev"
 
 echo.
-echo Todos os servicos foram iniciados em janelas separadas.
+echo Todos os servicos foram iniciados!
+echo SOAP esta rodando isolado no Docker.
 echo Boa apresentacao!
 pause
