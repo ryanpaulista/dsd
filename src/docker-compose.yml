@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_tcc
+    restart: always
+    ports:
+      - "5672:5672"   # Porta para comunicação das APIs (FastAPI, Django, Node)
+      - "15672:15672" # Porta para o Painel Administrativo Web
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # Para não perder as filas se reiniciar
+
+volumes:
+  rabbitmq_data:

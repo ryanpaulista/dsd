@@ -6,22 +6,16 @@ echo "=========================================="
 echo "   CONFIGURANDO AMBIENTE LINUX (DOCKER)"
 echo "=========================================="
 
-# Verifica se o Docker está rodando
-if ! docker info > /dev/null 2>&1; then
-    echo "❌ [ERRO] O Docker não está rodando ou você não tem permissão."
-    echo "Tente iniciar o serviço: sudo systemctl start docker"
-    exit 1
-fi
-
 # --- 1. SOAP Service (DOCKER BUILD) ---
-echo ""
-echo "🐳 [1/5] Construindo Imagem Docker para SOAP..."
+echo "--------------------------------------------------"
+echo "📦 Configurando: SOAP Frete (Python)..."
 cd "$BASE_DIR/src/soap-frete-service"
-docker build -t soap-frete .
-if [ $? -ne 0 ]; then
-    echo "❌ Falha ao criar imagem Docker."
-    exit 1
-fi
+# Cria venv se não existir
+if [ ! -d "venv" ]; then python3 -m venv venv; fi
+# Ativa, instala e desativa
+source venv/bin/activate
+pip install -r requirements.txt
+deactivate
 
 # --- 2. Django Catálogo ---
 echo ""

@@ -12,9 +12,14 @@ class ProdutoResponse(BaseModel):
     descricao: str
     preco: float
     peso: float
+    estoque: int
     imagem_url: str
     links: List[Link]
 
 class FreteRequest(BaseModel):
     cep: str
     peso: float
+
+class CompraRequest(BaseModel):
+    id_produto: int
+    quantidade: int

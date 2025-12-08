@@ -1,4 +1,14 @@
-URL_CATALOGO = "http://127.0.0.1:8001/api/produtos"
-URL_LOGISTICA = "http://127.0.0.1:3000/cotacao-frete"
+from pydantic_settings import BaseSettings
 
-GATEWAY_URL = "http://10.24.22.180:8080"
+class Settings(BaseSettings):
+    CATALOGO_URL: str
+    LOGISTICA_URL: str
+    GATEWAY_URL: str
+    RABBITMQ_URL: str
+    #database_url: str = "sqlite:///./test.db" # Valor padrão
+    debug: bool = False
+
+    class Config:
+        env_file = ".env" 
+
+settings = Settings()

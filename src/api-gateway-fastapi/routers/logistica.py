@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException
 import httpx
-from config import URL_LOGISTICA
 from schemas import FreteRequest
+from config import settings
 
 router = APIRouter(tags=["Logística"])
+
+URL_LOGISTICA = settings.LOGISTICA_URL
 
 @router.post("/produtos/{id_produto}/frete")
 async def calcular_frete(id_produto: int, dados: FreteRequest):

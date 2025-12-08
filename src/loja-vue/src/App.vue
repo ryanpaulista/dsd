@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 
 const produtos = ref([])
@@ -8,6 +8,10 @@ const freteResultado = ref(null)
 const carregando = ref(false)
 const cepInput = ref('')
 const pesoInput = ref('') 
+const comprando = ref(false)
+const estoque = ref('--')
+
+let socket = null
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL
 const WSDL_URL = import.meta.env.VITE_WSDL_URL
@@ -16,7 +20,7 @@ console.log(DOCS_URL);
 
 const carregarProdutos = async () => {
   try {
-    const response = await axios.get(GATEWAY_URL)
+    const response = await axios.get(`${GATEWAY_URL}/produtos`)
     produtos.value = response.data
   } catch (error) {
     alert('Erro ao conectar com o Gateway: ' + error.message)
@@ -25,11 +29,38 @@ const carregarProdutos = async () => {
 
 const verDetalhes = async (id) => {
   try {
-    const response = await axios.get(`${GATEWAY_URL}/${id}`)
+    const response = await axios.get(`${GATEWAY_URL}/produtos/${id}`)
     produtoSelecionado.value = response.data
+    estoque.value = response.data.estoque
     freteResultado.value = null 
   } catch (error) {
     alert('Erro ao carregar produto.')
+  }
+}
+
+const comprarProduto = async (id) => {
+  try {
+    comprando.value = true
+
+    const payload = {
+      id_produto: id,
+      quantidade: 1
+    }
+
+    console.log("🛠️ PAYLOAD SENDO ENVIADO:", payload)
+    console.log("🛠️ TIPO DO ID:", typeof id)
+    
+    const response = await axios.post(`${GATEWAY_URL}/comprar`, payload)
+  } catch(error) {
+    console.error(error)
+
+    if (error.response && error.response.status === 503) {
+        alert('O sistema de compras está temporariamente indisponível.')
+    } else {
+        alert('Erro ao realizar a compra.')
+    }
+  } finally {
+    comprando.value = false
   }
 }
 
@@ -74,8 +105,45 @@ const calcularFrete = async () => {
   }
 }
 
+function conectarWebSocket(){
+  const wsURL = GATEWAY_URL.replace('http', 'ws') + '/ws'
+  console.log("Conectando WebSocket em " + wsURL)
+
+  socket = new WebSocket(wsURL)
+
+  socket.onopen = () => {
+    console.log("WebSocket Conectado")
+  }
+  
+  socket.onmessage = (event) => {
+    console.log("Mensagem recebida " + event.data)
+
+    try {
+      const dados = JSON.parse(event.data);
+
+      if(dados.tipo == "ATUALIZACAO_ESTOQUE"){
+        if(produtoSelecionado.value && produtoSelecionado.value.id == dados.id_produto){
+          estoque.value = dados.novo_estoque;
+          console.log("Estoque atualizado na tela");
+        }
+      }
+    } catch(e) {
+      console.log("Mensagem não é JSON " +  event.data)
+    }
+  }
+
+  socket.onerror = (error) => {
+    console.error("Erro no WebSocket", error)
+  }
+}
+
 onMounted(() => {
   carregarProdutos()
+  conectarWebSocket()
+})
+
+onUnmounted(() => {
+  if (socket) socket.close()
 })
 </script>
 
@@ -83,7 +151,7 @@ onMounted(() => {
   <div class="container">
     <header>
       <h1>🧠 Brainz E-Shop</h1>
-      <p>Arquitetura Distribuída: Vue ↔ Gateway/FastAPI ↔ (Django + Node/Express -> Spyne/SOAP)</p>
+      <p>Arquitetura Distribuída: Vue ↔ Gateway/FastAPI ↔ RabbitMQ ↔ (Django + Node/Express -> Spyne/SOAP)</p>
     </header>
 
     <div v-if="!produtoSelecionado" class="grid">
@@ -105,10 +173,18 @@ onMounted(() => {
         <p>{{ produtoSelecionado.descricao }}</p>
         <p class="price-lg">R$ {{ produtoSelecionado.preco }}</p>
         <p style="color: #666; font-size: 0.9em;">
-          Peso unitário: <strong>{{ produtoSelecionado.peso }} g</strong>
+          Peso unitário: <strong>{{ produtoSelecionado.peso }} g</strong> | Estoque: <strong>{{estoque}}</strong>
         </p>
 
         <hr>
+
+        <button 
+          @click="comprarProduto(produtoSelecionado.id)" 
+          :disabled="comprando"
+          class="btn-comprar"
+        >
+          {{ comprando ? 'Processando...' : 'Comprar Agora' }}
+        </button>
 
         <div class="frete-area">
           <div class="header-soap">

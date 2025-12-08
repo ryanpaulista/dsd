@@ -10,30 +10,35 @@ Este projeto demonstra uma arquitetura híbrida onde **serviços REST** (Django 
 - **Catálogo (REST)**: Django + Django REST Framework — `src/api-catalogo-django`
 - **API Logística (consumidor SOAP / REST)**: Node.js + Express — `src/api-logistica-express`
 - **Serviço SOAP (Frete)**: Spyne (Python) — `src/soap-frete-service`
+- **RabbitMQ**
 - **Cliente Web**: Vue 3 + Vite — `src/loja-vue`
 
 ---
 
 ## Arquitetura (visão rápida)
 ```
-┌─────────────────────┐
-│  Front-End (Vue.js) │
-└──────────▲──────────┘
-           │ (JSON / HTTP)
-           │
-┌──────────▼─────────────────┐
-│ API Gateway (FastAPI)      │ ◄── Implementa HATEOAS e Swagger Unificado
-└──────────┬─────────────────┘
-           │
-           │ Roteamento
-           │
-     ┌─────┴──────────────┐
-     │                    │
-┌────▼─────────┐     ┌────▼──────────┐           ┌────────────────┐
-│ API Catálogo │     │ API Logística │ (XML)     │ Serviço Frete  │
-│   (Django)   │     │   (Express)   ├─────────► │ (Python SOAP)  │
-└──────────────┘     └───────────────┘           └────────────────┘
+      ┌──────────────────────┐
+      │  Front-End (Vue.js)  │
+      └──────────▲───────────┘
+                 │ HTTP (JSON)
+                 │ WebSocket (Eventos)
+                 │
+      ┌──────────▼───────────┐
+      │ API Gateway (FastAPI)│ ◄─── Orquestrador
+      └────┬─────┬─────┬─────┘
+           │     │     │
+   REST    │     │     │ AMQP (Mensageria)
+┌──────────▼─┐   │   ┌─▼──────────┐
+│ API Django │   │   │  RabbitMQ  │ ◄─── Fila de Pedidos
+│ (Catálogo) │   │   │            │
+└────────────┘   │   └────────────┘
+                 │
+           ┌─────▼───────┐      SOAP      ┌─────────────┐
+           │   API Node  │ ◄────────────► │   API SOAP  │
+           │ (Logística) │      (XML)     │   (Frete)   │
+           └─────────────┘                └─────────────┘
 ```
+
 ### Principais portas/endpoints (padrões no projeto)
 - **Gateway (FastAPI)**: `http://localhost:8080/`
   - Swagger UI: `http://localhost:8080/docs`
@@ -42,6 +47,7 @@ Este projeto demonstra uma arquitetura híbrida onde **serviços REST** (Django 
   - Serviço expõe método: `calcular_frete(cep: string, peso: float)` → retorna `FreteResponse`
 - **API Logística (Express)**: `http://localhost:3000/cotacao-frete` (endpoint que consome o SOAP e retorna JSON)
 - **Cliente Vue (Vite)**: `http://localhost:5173` (padrão Vite)
+- **RabbitMQ**: `http://localhost:15672/`
 
 ---
 

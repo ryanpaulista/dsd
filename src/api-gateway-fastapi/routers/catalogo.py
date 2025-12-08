@@ -1,10 +1,14 @@
 from fastapi import APIRouter, HTTPException
 import httpx
 from typing import List
-from config import URL_CATALOGO, GATEWAY_URL
 from schemas import ProdutoResponse, Link
+from config import settings
 
 router = APIRouter(tags=["Catálogo"])
+
+#urls
+URL_CATALOGO = settings.CATALOGO_URL
+GATEWAY_URL = settings.GATEWAY_URL
 
 @router.get("/produtos", response_model=List[ProdutoResponse])
 async def listar_produtos():
