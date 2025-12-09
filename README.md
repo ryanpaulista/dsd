@@ -30,7 +30,7 @@ Este projeto demonstra uma arquitetura híbrida onde **serviços REST** (Django 
    REST    │     │     │ AMQP (Mensageria)
 ┌──────────▼─┐   │   ┌─▼──────────┐
 │ API Django │   │   │  RabbitMQ  │ ◄─── Fila de Pedidos
-│ (Catálogo) │   │   │            │
+│ (Catálogo) │   │   │            │ ◄─── Fila de Notificações
 └────────────┘   │   └────────────┘
                  │
            ┌─────▼───────┐      SOAP      ┌─────────────┐
@@ -38,6 +38,11 @@ Este projeto demonstra uma arquitetura híbrida onde **serviços REST** (Django 
            │ (Logística) │      (XML)     │   (Frete)   │
            └─────────────┘                └─────────────┘
 ```
+
+Processo Web (Server): Responde requisições HTTP (GET/POST). É o python manage.py runserver.
+
+Processo Worker (Trabalhador): Fica rodando scripts de fundo, ouvindo filas. É o python manage.py run_consumer.
+
 
 ### Principais portas/endpoints (padrões no projeto)
 - **Gateway (FastAPI)**: `http://localhost:8080/`
