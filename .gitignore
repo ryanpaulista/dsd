@@ -1,3 +1,5 @@
+recebidos/
+
 # --- Python (Gateway e API Pedidos) ---
 __pycache__/
 *.py[cod]
