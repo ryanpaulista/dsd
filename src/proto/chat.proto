@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package chat;
+
+// Mensagem enviada pelo cliente
+message ChatMessage {
+    string usuario = 1;
+    string texto = 2;
+    int64 timestamp = 3;
+}
+
+// Resposta do servidor
+message ServerResponse {
+    bool sucesso = 1;
+    string mensagem = 2;
+}
+
+// Requisição para entrar no chat
+message EntrarRequest {
+    string usuario = 1;
+}
+
+// Mensagem vazia para streaming
+message Empty {}
+
+// Serviço de Chat
+service ChatService {
+    // Envia uma mensagem (Unary RPC)
+    rpc EnviarMensagem(ChatMessage) returns (ServerResponse);
+    
+    // Recebe mensagens em tempo real (Server Streaming RPC)
+    rpc ReceberMensagens(EntrarRequest) returns (stream ChatMessage);
+    
+    // Chat bidirecional (Bidirectional Streaming RPC)
+    rpc ChatStream(stream ChatMessage) returns (stream ChatMessage);
+}
