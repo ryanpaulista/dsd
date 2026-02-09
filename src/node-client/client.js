@@ -22,7 +22,7 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 const chatProto = grpc.loadPackageDefinition(packageDefinition).chat;
 
 // Configuração
-const SERVER_ADDR = process.argv[2] || 'localhost:50051';
+const SERVER_ADDR = process.argv[2] || '172.16.0.2:50051';
 const USUARIO = process.argv[3] || `Node_${process.pid}`;
 
 // Cria o cliente gRPC
